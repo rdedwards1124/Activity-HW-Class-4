@@ -5,8 +5,8 @@ class Currency:
         "GBP": 0.737414,  # british pound
         "JPY": 111.019919,  # japanese yen
         "EUR": 0.862361,  # euro
-        "USD": 1.0,
-    }  # us dollar
+        "USD": 1.0,     # us dollar
+    }  
 
     def __init__(self, value, unit="USD"):
         self.value = value
@@ -24,31 +24,48 @@ class Currency:
     # add magic methods here
     def __repr__(self):
         # This method returns the string to be printed. This should be the value rounded to two digits, accompanied by its acronym.
-        pass
+        return f"{round(self.value,2)} {self.unit}"
 
     def __str__(self):
         # This method returns the same value as __repr__(self).
-        pass
+        return f"{round(self.value,2)} {self.unit}"
 
     def __add__(self, other):
         # Defines the '+' operator. If other is a Currency object, the currency values are added and the result will be the unit of self. If other is an int or a float, other will be treated as a USD value.
-        pass
+        if type(other) == int or type(other) == float:
+            num = (other * Currency.currencies[self.unit])
+        else:
+            num = (other.value / Currency.currencies[other.unit] * Currency.currencies[self.unit]) 
+        return Currency(num + self.value, self.unit)
 
     def __iadd__(self, other):
-        pass
+        # This is the same as (calls) __add__(self,other)
+        return Currency.__add__(self, other)
 
     def __radd__(self, other):
-        pass
+        # This method is similar to __add__(self,other), but occurs when an int or float tries to add a Currency object. (Treat the int/float as having a USD value.)
+        result = self + other
+        if self.unit != "USD":
+            result.changeTo("USD")
+        return result
 
-    def __sub__(self,other):
-        pass
+    def __sub__(self, other):
+        # All __sub__(self,other) type functions are parallel to __add__(self,other) type functions.
+        if type(other) == int or type(other) == float:
+            num = (other * Currency.currencies[self.unit])
+        else:
+            num = (other.value / Currency.currencies[other.unit] * Currency.currencies[self.unit]) 
+        return Currency(self.value - num, self.unit)
 
-    def __isub__(self,other):
-        pass
+    def __isub__(self, other):
+        return Currency.__sub__(self, other)
 
-    def __rsub__(self,other):
-        pass
-
+    def __rsub__(self, other):
+        result = other - self.value
+        result = Currency(result,self.unit)
+        if self.unit != "USD":
+            result.changeTo("USD")
+        return result
 
 
 
